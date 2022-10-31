@@ -1,21 +1,17 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/wesleynepo/auth-service-go/internal/handlers/auth"
+	"github.com/wesleynepo/auth-service-go/internal/handlers/health"
 )
 
 func main() {
     authHandler := auth.NewHTTPHandler()
+    healthHandler := health.NewHTTPHandler()
     router := gin.Default()
 
-    router.GET("/ping", func (c *gin.Context) {
-        c.JSON(http.StatusOK, gin.H{
-            "message": "pong",
-        })
-    })
+    router.GET("/healthcheck", healthHandler.Get)
 
     router.POST("/login", authHandler.Login)
     router.POST("/refresh", authHandler.Refresh)
