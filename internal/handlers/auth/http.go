@@ -44,3 +44,4 @@ func (handler *HTTPHandler) Refresh(c *gin.Context) {
 
     c.JSON(http.StatusOK, auth)
 }
+

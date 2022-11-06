@@ -6,6 +6,7 @@ import (
 	"github.com/wesleynepo/auth-service-go/internal/core/service/usersrv"
 	"github.com/wesleynepo/auth-service-go/internal/handlers/auth"
 	"github.com/wesleynepo/auth-service-go/internal/handlers/health"
+	"github.com/wesleynepo/auth-service-go/internal/handlers/users"
 	"github.com/wesleynepo/auth-service-go/internal/repositories/usersrepo"
 	"github.com/wesleynepo/auth-service-go/pkg/jwt"
 )
@@ -16,12 +17,14 @@ func main() {
     authService := authsrv.New(jwt.New(), usersService)
     authHandler := auth.NewHTTPHandler(authService)
     healthHandler := health.NewHTTPHandler()
+    usersHandler := users.NewHTTPHandler(usersService)
     router := gin.Default()
 
     router.GET("/healthcheck", healthHandler.Get)
 
     router.POST("/login", authHandler.Login)
     router.POST("/refresh", authHandler.Refresh)
+    router.POST("/create", usersHandler.Create)
 
     router.Run()
 }

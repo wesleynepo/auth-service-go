@@ -8,5 +8,6 @@ type AuthService interface {
 }
 
 type UserService interface {
-    CheckCredentials(email, password string) (float64, error)
+    CheckCredentials(email, password string) (uint, error)
+    Create(email, password, confirmPassword string) (error)
 }

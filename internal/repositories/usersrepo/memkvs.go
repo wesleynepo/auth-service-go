@@ -31,6 +31,7 @@ func (repo *memkvs) FindByMail(email string) (domain.User, error) {
 }
 
 func (repo *memkvs) Save(user domain.User) error {
+    user.ID = 123
 	bytes, err := json.Marshal(user)
 
 	if err != nil {

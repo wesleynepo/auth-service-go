@@ -8,8 +8,8 @@ import (
 )
 
 type JWTGen interface {
-    CreateToken(userId float64, expiration time.Time) (string, error)
-    CheckToken(token string) (float64, error)
+    CreateToken(userId uint, expiration time.Time) (string, error)
+    CheckToken(token string) (uint, error)
 }
 
 type jwtgen struct {}
@@ -18,7 +18,7 @@ func New() JWTGen {
     return &jwtgen{}
 }
 
-func (j jwtgen) CreateToken(userId float64, expiration time.Time) (string, error) {
+func (j jwtgen) CreateToken(userId uint, expiration time.Time) (string, error) {
     var claims jwt.Claims
 
     claims.Set = map[string]interface{}{"id": userId}
@@ -34,7 +34,7 @@ func (j jwtgen) CreateToken(userId float64, expiration time.Time) (string, error
     return string(token), nil
 }
 
-func (j jwtgen) CheckToken(token string) (float64, error) {
+func (j jwtgen) CheckToken(token string) (uint, error) {
     claims, err := jwt.HMACCheck([]byte(token), []byte("test"))
 
     if err != nil {
@@ -45,5 +45,5 @@ func (j jwtgen) CheckToken(token string) (float64, error) {
         return 0, errors.New("Token expired")
     }
 
-    return claims.Set["id"].(float64), nil
+    return claims.Set["id"].(uint), nil
 }
