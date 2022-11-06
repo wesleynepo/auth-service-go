@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wesleynepo/auth-service-go/internal/core/domain/ports"
+	"github.com/wesleynepo/auth-service-go/internal/core/ports"
 )
 
 type HTTPHandler struct {
@@ -44,3 +44,4 @@ func (handler *HTTPHandler) Refresh(c *gin.Context) {
 
     c.JSON(http.StatusOK, auth)
 }
+

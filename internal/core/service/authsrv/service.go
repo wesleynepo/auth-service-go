@@ -4,18 +4,20 @@ import (
 	"time"
 
 	"github.com/wesleynepo/auth-service-go/internal/core/domain"
+	"github.com/wesleynepo/auth-service-go/internal/core/ports"
 	"github.com/wesleynepo/auth-service-go/pkg/jwt"
 )
 
 type service struct {
     jwt jwt.JWTGen
+    usersService ports.UserService
 }
 
 const TOKEN_DURATION = 4
 const REFRESH_TOKEN_DURATION = 12
 
-func New(jwt jwt.JWTGen) *service {
-    return &service{jwt: jwt}
+func New(jwt jwt.JWTGen, userService ports.UserService) *service {
+    return &service{jwt: jwt, usersService: userService}
 }
 
 func tokenTime() (time.Time) {
@@ -28,9 +30,11 @@ func refreshTokenTime() (time.Time) {
 
 func (s *service) Login(email, password string) (domain.Auth, error) {
 
-    //TODO: user service validation
-    refreshTokenDuration := time.Now().Add(time.Hour * 12)
-    userId := 123.0
+    userId, err := s.usersService.CheckCredentials(email, password)
+
+    if err != nil {
+        return domain.Auth{}, err
+    }
 
     token, err := s.jwt.CreateToken(userId, tokenTime())
 
@@ -38,7 +42,7 @@ func (s *service) Login(email, password string) (domain.Auth, error) {
         return domain.Auth{}, err
     }
 
-    refresh, err := s.jwt.CreateToken(userId, refreshTokenDuration)
+    refresh, err := s.jwt.CreateToken(userId, refreshTokenTime())
 
     if (err != nil) {
         return domain.Auth{}, err
