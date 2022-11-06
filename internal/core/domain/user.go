@@ -1,6 +1,8 @@
 package domain
 
 type User struct {
+    Id       float64 `json:"id"`
     Email    string `json:"email"`
-    Password string `json:"password"`
+    Hash     string `json:"hash"`
+    Salt     string `json:"salt"`
 }
