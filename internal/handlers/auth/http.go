@@ -24,11 +24,23 @@ func (handler *HTTPHandler) Login(c *gin.Context) {
     auth, err := handler.authService.Login(body.Email, body.Password)
 
     if err != nil {
-        c.AbortWithStatusJSON(http.StatusInternalServerError, err)
+        c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
     }
 
     c.JSON(http.StatusOK, auth)
 }
 
 func (handler *HTTPHandler) Refresh(c *gin.Context) {
+    body := BodyRefresh{}
+    c.BindJSON(&body)
+
+    auth, err := handler.authService.Refresh(body.Refresh)
+
+    if err != nil {
+        c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, auth)
 }

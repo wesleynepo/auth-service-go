@@ -9,7 +9,7 @@ import (
 
 type JWTGen interface {
     CreateToken(userId float64, expiration time.Time) (string, error)
-    CheckToken(token string) (string, error)
+    CheckToken(token string) (float64, error)
 }
 
 type jwtgen struct {}
@@ -34,16 +34,16 @@ func (j jwtgen) CreateToken(userId float64, expiration time.Time) (string, error
     return string(token), nil
 }
 
-func (j jwtgen) CheckToken(token string) (string, error) {
+func (j jwtgen) CheckToken(token string) (float64, error) {
     claims, err := jwt.HMACCheck([]byte(token), []byte("test"))
 
     if err != nil {
-        return "", errors.New("Invalid token")
+        return 0, errors.New("Invalid token")
     }
 
-    if (claims.Valid(time.Time{})) {
-        return "", errors.New("Token expired")
+    if (!claims.Valid(time.Time{})) {
+        return 0, errors.New("Token expired")
     }
 
-    return claims.Set["id"].(string), nil
+    return claims.Set["id"].(float64), nil
 }
