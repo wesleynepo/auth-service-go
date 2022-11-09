@@ -8,12 +8,13 @@ import (
 	"github.com/wesleynepo/auth-service-go/internal/handlers/health"
 	"github.com/wesleynepo/auth-service-go/internal/handlers/users"
 	"github.com/wesleynepo/auth-service-go/internal/repositories/usersrepo"
+	"github.com/wesleynepo/auth-service-go/pkg/hash"
 	"github.com/wesleynepo/auth-service-go/pkg/jwt"
 )
 
 func main() {
     usersRepository := usersrepo.NewMemKVS()
-    usersService := usersrv.New(usersRepository)
+    usersService := usersrv.New(usersRepository, hash.New())
     authService := authsrv.New(jwt.New(), usersService)
     authHandler := auth.NewHTTPHandler(authService)
     healthHandler := health.NewHTTPHandler()

@@ -5,17 +5,19 @@ import (
 
 	"github.com/wesleynepo/auth-service-go/internal/core/domain"
 	"github.com/wesleynepo/auth-service-go/internal/core/ports"
+	"github.com/wesleynepo/auth-service-go/pkg/hash"
 )
 
 type service struct {
     usersRepository ports.UsersRepository
-}
+    hasher hash.Hasher
+ }
 
 const TOKEN_DURATION = 4
 const REFRESH_TOKEN_DURATION = 12
 
-func New(usersRepository ports.UsersRepository) *service {
-    return &service{usersRepository: usersRepository}
+func New(usersRepository ports.UsersRepository, hasher hash.Hasher) *service {
+    return &service{usersRepository: usersRepository, hasher: hasher}
 }
 
 func (s *service) CheckCredentials(email, password string) (uint, error) {
@@ -25,8 +27,7 @@ func (s *service) CheckCredentials(email, password string) (uint, error) {
         return 0, err
     }
 
-    // Logic with hash and salt for password
-    valid := true
+    valid := s.hasher.PasswordMatches(password, user.Hash)
 
     if !valid {
         return 0, errors.New("invalid password")
@@ -40,13 +41,15 @@ func (s *service) Create(email, password, confirmPassword string) (error) {
         return errors.New("Password and confirmPassword doesn't match")
     }
 
-    // HASH AND SALT PASSWORD LOGIC
-    hash := "AA"
-    salt := "BB"
+    hash, err := s.hasher.HashPassword(password)
 
-    user := domain.User{Email: email, Hash: hash, Salt: salt}
+    if err != nil {
+        return err
+    }
 
-    err := s.usersRepository.Save(user)
+    user := domain.User{Email: email, Hash: hash}
+
+    err = s.usersRepository.Save(user)
 
     return err
 }
