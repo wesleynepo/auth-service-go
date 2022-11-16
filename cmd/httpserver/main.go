@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
 	"github.com/wesleynepo/auth-service-go/internal/core/service/authsrv"
 	"github.com/wesleynepo/auth-service-go/internal/core/service/usersrv"
@@ -15,7 +16,7 @@ import (
 )
 
 func main() {
-    storage := database.New("postgres://postgres:changeme@localhost:5432/postgres?sslmode=disable&application_name=GOGOS")
+    storage := database.New()
     defer storage.Close()
 
     usersRepository := usersrepo.NewRelational(storage.Get())
