@@ -19,7 +19,11 @@ func NewHTTPHandler(usersService ports.UserService) *HTTPHandler{
 
 func (handler *HTTPHandler) Create(c *gin.Context) {
     body := BodyCreateUser{}
-    c.BindJSON(&body)
+
+    if err := c.BindJSON(&body); err != nil {
+        c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+        return
+    }
 
     err := handler.usersService.Create(body.Email, body.Password, body.ConfirmPassword)
 
