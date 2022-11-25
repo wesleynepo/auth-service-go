@@ -19,7 +19,11 @@ func NewHTTPHandler(authService ports.AuthService) *HTTPHandler{
 
 func (handler *HTTPHandler) Login(c *gin.Context) {
     body := BodyLogin{}
-    c.BindJSON(&body)
+
+    if err := c.BindJSON(&body); err != nil {
+        c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+        return
+    }
 
     auth, err := handler.authService.Login(body.Email, body.Password)
 
@@ -33,7 +37,11 @@ func (handler *HTTPHandler) Login(c *gin.Context) {
 
 func (handler *HTTPHandler) Refresh(c *gin.Context) {
     body := BodyRefresh{}
-    c.BindJSON(&body)
+
+    if err := c.BindJSON(&body); err != nil {
+        c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+        return
+    }
 
     auth, err := handler.authService.Refresh(body.Refresh)
 
